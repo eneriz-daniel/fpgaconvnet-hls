@@ -43,17 +43,17 @@ class GenerateNetwork:
         # self.model = onnx_helper.update_batch_size(self.model,self.partition.batch_size)
 
         # remove biases
-        for partition in self.partitions.partition:
-            for layer in partition.layers:
-                if layer.bias_path:
-                    initializer = onnx_helper.get_model_initializer(self.model, layer.bias_path, to_tensor=False)
-                    # TODO: seems like theres no bias initializer for inner product layer
-                    if not initializer:
-                        continue
-                    zeroes = np.zeros(onnx.numpy_helper.to_array(initializer).shape).astype(np.float32)
-                    initializer_new = onnx.numpy_helper.from_array(zeroes,name=initializer.name)
-                    self.model.graph.initializer.remove(initializer)
-                    self.model.graph.initializer.extend([initializer_new])
+        # for partition in self.partitions.partition:
+        #     for layer in partition.layers:
+        #         if layer.bias_path:
+        #             initializer = onnx_helper.get_model_initializer(self.model, layer.bias_path, to_tensor=False)
+        #             # TODO: seems like theres no bias initializer for inner product layer
+        #             if not initializer:
+        #                 continue
+        #             zeroes = np.zeros(onnx.numpy_helper.to_array(initializer).shape).astype(np.float32)
+        #             initializer_new = onnx.numpy_helper.from_array(zeroes,name=initializer.name)
+        #             self.model.graph.initializer.remove(initializer)
+        #             self.model.graph.initializer.extend([initializer_new])
 
         # add intermediate layers to outputs
         for node in self.model.graph.node:
@@ -80,7 +80,7 @@ class GenerateNetwork:
 
         # create generator for each partition
         self.partitions_generator = [ GeneratePartition(
-            self.name, partition, self.model, self.sess, f"partition_{i}") for \
+            self.name, partition, self.model, self.sess, f"{self.name}_partition_{i}") for \
                     i, partition in enumerate(self.partitions.partition) ]
 
         # flags
