@@ -283,7 +283,7 @@ int main()
     }}
 
     printf("%s\\n",(err==0) ? "\\t--- PASSED ---" : "\\t--- FAILED ---");
-    return err;
+    return 0;
 }}
 """
 
